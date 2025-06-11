@@ -1,74 +1,106 @@
-import { faker } from '@faker-js/faker';
+import { faker } from '@faker-js/faker'
 
 describe('Register User', () => {
-  it('registration form success', () => {
-    const nameUser = faker.internet.userName()
-    const emailUser = faker.internet.email()
-    const firstName = faker.person.firstName()
-    const lastName = faker.person.lastName()
-    const comapnuy = faker.company.name()
-    const address = faker.location.streetAddress()
-    const state = faker.location.state()
-    const city = faker.location.city()
-    const zipcode = faker.location.zipCode()
-    const mobileNumber = faker.phone.number('###-###-####')
+  let user
+
+  beforeEach(() => {
+    user = {
+      name: faker.internet.userName(),
+      email: faker.internet.email(),
+      password: '12345678',
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
+      company: faker.company.name(),
+      address: faker.location.streetAddress(),
+      state: faker.location.state(),
+      city: faker.location.city(),
+      zipcode: faker.location.zipCode(),
+      mobile: faker.phone.number('###-###-####'),
+      birthDay: '5',
+      birthMonth: 'June',
+      birthYear: '2002',
+    }
+  })
+
+  it('should register a user successfully', () => {
     // Arrange
     cy.visit('https://automationexercise.com')
 
-    // Act 1
+    // Act 1: Início do cadastro
     cy.contains('Signup / Login').click()
+
     cy.url().should('include', '/login')
-    cy.get('[data-qa="signup-name"]').type(nameUser)
-    cy.get('[data-qa="signup-email"]').type(emailUser)
+
+    cy.get('[data-qa="signup-name"]').type(user.name)
+
+    cy.get('[data-qa="signup-email"]').type(user.email)
+
     cy.contains('button', 'Signup').click()
 
-    // Assert 1
+    // Assert 1: Formulário de cadastro carregado
     cy.url().should('include', '/signup')
+
     cy.contains('h2', 'Enter Account Information')
 
-    // Act 2
-    cy.get('#id_gender1').check()
-      .should('be.checked')
-    cy.get('[data-qa="password"]').type('12345678')
-    cy.get('[data-qa="days"]').select('5')
-    cy.get('[data-qa="months"]').select('June')
-    cy.get('[data-qa="years"]').select('2002')
-    cy.get('#newsletter').check()
-      .should('be.checked')
-    cy.get('#optin').check()
-      .should('be.checked')
-    cy.get('[data-qa="first_name"]').type(firstName)
-    cy.get('[data-qa="last_name"]').type(lastName)
-    cy.get('[data-qa="company"]').type(comapnuy)
-    cy.get('[data-qa="address"]').type(address)
-    cy.get('[data-qa="state"]').type(state)
-    cy.get('[data-qa="city"]').type(city)
-    cy.get('[data-qa="zipcode"]').type(zipcode)
-    cy.get('[data-qa="mobile_number"]').type(mobileNumber)
+    // Act 2: Preenchimento do formulário
+    cy.get('#id_gender1').check().should('be.checked')
+
+    cy.get('[data-qa="password"]').type(user.password)
+
+    cy.get('[data-qa="days"]').select(user.birthDay)
+
+    cy.get('[data-qa="months"]').select(user.birthMonth)
+
+    cy.get('[data-qa="years"]').select(user.birthYear)
+
+    cy.get('#newsletter').check().should('be.checked')
+
+    cy.get('#optin').check().should('be.checked')
+
+    cy.get('[data-qa="first_name"]').type(user.firstName)
+
+    cy.get('[data-qa="last_name"]').type(user.lastName)
+
+    cy.get('[data-qa="company"]').type(user.company)
+
+    cy.get('[data-qa="address"]').type(user.address)
+
+    cy.get('[data-qa="state"]').type(user.state)
+
+    cy.get('[data-qa="city"]').type(user.city)
+
+    cy.get('[data-qa="zipcode"]').type(user.zipcode)
+
+    cy.get('[data-qa="mobile_number"]').type(user.mobile)
+
     cy.contains('button', 'Create Account').click()
 
-    // Assert 2
+    // Assert 2: Conta criada
     cy.url().should('eq', 'https://automationexercise.com/account_created')
+
     cy.contains('h2', 'Account Created!')
+
     cy.get('[data-qa="continue-button"]').click()
   })
 
-  it('Register User with existing email', () => {
+  it('Register User with existing email', (
+    emailExist = Cypress.env('USER_EMAIL_EXIST')
+  ) => {
     // Arrange
     cy.visit('https://automationexercise.com/')
 
     // Act 1
     cy.contains('Signup / Login').click()
+
     cy.url().should('include', '/login')
-    cy.get('[data-qa="signup-name"]').type('derterminado')
-    cy.get('[data-qa="signup-email"]').type('testedetermina@teste.com')
+
+    cy.get('[data-qa="signup-name"]').type(user.name)
+
+    cy.get('[data-qa="signup-email"]').type(emailExist)
+
     cy.contains('button', 'Signup').click()
 
     // Assert 1
     cy.contains('p', 'Email Address already exist!')
   })
 })
-
-
-//cy.get('[data-qa="signup-name"]').type('derterminado')
-// cy.get('[data-qa="signup-email"]').type('testedetermina@teste.com')
