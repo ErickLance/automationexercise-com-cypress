@@ -1,27 +1,9 @@
 describe('Login', () => {
-  it('Login User with correct email and password', (
-    userName = Cypress.env('USER_NAME'),
-    userEmail = Cypress.env('USER_EMAIL_EXIST'),
-    userPassword = Cypress.env('USER_PASSWORD')
-  ) => {
-    // Arrange
-    cy.visit('https://automationexercise.com/')
+  it('Login User with correct email and password', () => {
+    cy.guiLogin()
 
-    // Act
-    cy.contains('Signup / Login').click()
+    cy.contains(Cypress.env('USER_NAME')).should('be.visible')
 
-    cy.url().should('include', '/login')
-
-    cy.contains('h2', 'Login to your account')
-
-    cy.get('[data-qa="login-email"]').type(userEmail)
-
-    cy.get('[data-qa="login-password"]').type(userPassword)
-
-    cy.contains('button', 'Login').click()
-
-    // Assert
-    cy.contains(`Logged in as ${userName}`);
   })
 
   it('Login User with incorrect email and password', () => {
